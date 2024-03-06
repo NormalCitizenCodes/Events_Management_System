@@ -1,1 +1,1 @@
-Midterm Project
+Group 02 Midterm Project
