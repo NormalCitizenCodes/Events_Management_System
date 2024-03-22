@@ -13,6 +13,7 @@ def current_date():  # This function return the current date ( Month Day Year)
 def display_menu():  # This function display the menu that user can choose
     print("+----------------------+-----+")
     print("| Display Event        |  1  |")
+    print("| Book Event           |  2  |")
     print("| Update Event         |  3  |")
     print("| Change Event Status  |  4  |")
     print("| Delete Event         |  5  |")
