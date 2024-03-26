@@ -51,9 +51,9 @@ def book_event_month(user_event_year):  # This function validate the month
 
             if user_event_year == cmp_year:
                 if event_month in month_abr and month_abr.index(event_month) >= month_abr.index(cmp_month):
-                    return event_month
+                    return month_abr[month_not_abr.index(event_month)]
                 elif event_month in month_not_abr and month_not_abr.index(event_month) >= month_abr.index(cmp_month):
-                    return event_month
+                    return month_abr[month_not_abr.index(event_month)]
                 else:
                     print("Invalid Month. Try Again.")
             else:
@@ -92,9 +92,11 @@ def book_event_day(user_event_year, user_event_month):  # This function validate
                     return event_days
                 elif user_event_month in month_30_day and cmp_day <= int(event_days) <= 30:
                     return event_days
-                elif user_event_month in month_spec_day and int(user_event_year) % 4 == 0 and cmp_day <= int(event_days) <= 29:
+                elif (user_event_month in month_spec_day and int(user_event_year) % 4 == 0 and
+                      cmp_day <= int(event_days) <= 29):
                     return event_days
-                elif user_event_month in month_spec_day and int(user_event_year) % 4 != 0 and cmp_day <= int(event_days) <= 28:
+                elif (user_event_month in month_spec_day and int(user_event_year) % 4 != 0 and
+                      cmp_day <= int(event_days) <= 28):
                     return event_days
                 else:
                     print("Invalid Day. Try Again.")
@@ -115,14 +117,51 @@ def book_event_day(user_event_year, user_event_month):  # This function validate
             print("Invalid Day. Try Again.")
 
 
+def book_event_time(user_event_year, user_event_month, user_event_day):
+    cmp_month, cmp_day, cmp_year = current_date()
+    today_time = datetime.datetime.now()
+    today_hour = int(today_time.strftime("%H"))
+
+    print(user_event_month)
+    print(cmp_month)
+    print("Ex valid format: 3 PM")
+    time_loop = True
+    while time_loop:
+        event_time = input("Enter event time ").strip()
+        event_time_list = event_time.split()
+        hour = event_time_list[0]
+        meantime = event_time_list[1].upper()
+        if hour.isdigit() and int(hour) < 13 and meantime == "AM" or meantime == "PM":
+            hour = int(hour)
+
+            if user_event_year == cmp_year and user_event_month == cmp_month and int(user_event_day) == cmp_day:
+                if meantime == "PM":
+                    hour = hour + 12
+                    if hour > today_hour:
+                        return [hour, meantime]
+                    else:
+                        print("Invalid PM time")
+                else:
+                    if hour > today_hour:
+                        return [hour, meantime]
+                    else:
+                        print("Invalid AM time")
+            else:
+                return [hour, meantime]
+        else:
+            print("Invalid time format")
+
+
 def book_event():  # This function use for event necessary information
     event_name = input("Enter event name: ")
     event_venue = input("Enter event venue: ")
     event_year_fun = book_event_year()
     event_month_fun = book_event_month(event_year_fun)
     event_day_fun = book_event_day(event_year_fun, event_month_fun)
+    event_hour, event_meantime = book_event_time(event_year_fun, event_month_fun, event_day_fun)
     formatted_year = event_month_fun + " " + event_day_fun + " " + str(event_year_fun)
-    book_info = [event_name, event_venue, formatted_year]
+    formatted_time = str(event_hour) + " " + str(event_meantime)
+    book_info = [event_name, event_venue, formatted_year, formatted_time]
     return book_info
 
 
@@ -145,7 +184,7 @@ while loop_control:
                 print("Event Name:", event_store[display_info][0])
                 print("Event Venue:", event_store[display_info][1])
                 print("Event Date:", event_store[display_info][2])
-
+                print("Event Time:", event_store[display_info][3])
     elif user_choose == "2":
         event_store.append(book_event())
     elif user_choose == "3":
