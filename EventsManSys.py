@@ -1,17 +1,22 @@
 import datetime
 
 
-def display_menu():  # This function display the menu that user can choose
-    print("+----------------------+-----+")
-    print("│ Display Event        │  1  │")
-    print("│ Book Event           │  2  │")
-    print("│ Update Event         │  3  │")
-    print("│ Change Event Status  │  4  │")
-    print("│ Delete Event         │  5  │")
-    print("│ Exit                 │  6  │")
-    print("+----------------------+-----+")
+# -==============================-GLOBAL VARIABLES-==============================-
+
+def display_menu():
+    print("+---+-------------------------------+")
+    print("│ # |   EVENT MANAGEMENT SYSTEM     │")
+    print("+---+-------------------------------+")
+    print("│ 1 │     Display Events            │")
+    print("│ 2 │     Book an Event             │")
+    print("│ 3 │     Update an Event           │")
+    print("│ 4 │     Edit Event Status         │")
+    print("│ 5 │     Delete an Event           │")
+    print("│ 6 │     Exit                      │")
+    print("+---+-------------------------------+")
 
 
+# -==============================-GLOBAL FOR BOOK EVENT AND SCHEDULES-==============================-
 class BookEvent:
 
     def __init__(self):
@@ -20,7 +25,7 @@ class BookEvent:
         self.current_month = current_date_time.strftime("%b")  # Return current Month in Abbreviation
         self.current_month_not_abr = current_date_time.strftime("%B")  # Return current Month in not Abbreviation
         self.current_day = int(current_date_time.strftime("%d"))  # Return current Day
-        self.current_hour = int(current_date_time.strftime("%H"))  # Return current Hour
+        self.current_hour = int(current_date_time.strftime("%H"))  # Return current Hour in 12 hours
         self.current_minute = int(current_date_time.strftime("%M"))  # Return current Minutes
         self.current_second = int(current_date_time.strftime("%S"))  # Return current Seconds
         self.current_midday = current_date_time.strftime("%p")  # Return the current midday (AM or PM)
@@ -33,17 +38,17 @@ class BookEvent:
 
         print("Current Date:", self.current_month, self.current_day, self.current_year)
         print(f"Current Time: {hour_time}:{self.current_minute}:{self.current_second} {self.current_midday}")
-        event_name = input("Event name: ").strip().title()
-        event_venue = input("Event venue: ").strip().title()
+        event_name = input("Event name                           : ").strip().title()
+        event_venue = input("Event venue                          : ").strip().title()
         return [event_name, event_venue]
 
     def book_event_year(self):
         while True:
-            event_year = input("Enter event year: ").strip()
+            event_year = input("Enter event year                     : ").strip()
             if event_year.isdigit() and int(event_year) >= self.current_year:
                 return int(event_year)
             else:
-                print("Invalid Year. Try Again.")
+                print("INVALID: Only current or future years are accepted. Past years and letters are invalid.")
 
     def book_event_month(self, user_event_year):
         month_abr = [
@@ -57,7 +62,7 @@ class BookEvent:
         ]
 
         while True:
-            event_month = input("Enter event month: ").strip().capitalize()
+            event_month = input("Enter event month (ex. Dec/December) : ").strip().capitalize()
             if event_month in month_abr or event_month in month_not_abr:
                 if user_event_year == self.current_year:
                     if event_month in month_abr and month_abr.index(event_month) >= month_abr.index(self.current_month):
@@ -66,16 +71,16 @@ class BookEvent:
                             self.current_month):
                         return month_abr[month_not_abr.index(event_month)]
                     else:
-                        print("Invalid Month. Try Again.")
+                        print("INVALID: Only current or future months are accepted.")
                 else:
                     if event_month in month_abr:
                         return month_abr[month_abr.index(event_month)]
                     elif event_month in month_not_abr:
                         return month_abr[month_not_abr.index(event_month)]
                     else:
-                        print("Invalid Month. Try Again.")
+                        print("INVALID: Only current or future months are accepted.")
             else:
-                print("Invalid Month. Try Again.")
+                print("INCORRECT SPELL: Only numbers no letters or special characters")
 
     def book_event_day(self, user_event_year, user_event_month):  # This function validate the event day
 
@@ -94,7 +99,7 @@ class BookEvent:
         ]
 
         while True:
-            event_days = input("Enter event day: ").strip()
+            event_days = input("Enter event day                      : ").strip()
 
             if event_days.isdigit():
 
@@ -111,7 +116,7 @@ class BookEvent:
                           self.current_day <= int(event_days) <= 28):
                         return event_days
                     else:
-                        print("Invalid Day. Try Again.")
+                        print("INVALID: Only current or future days are accepted and within the month. Try Again")
                 else:
                     if user_event_month in month_31_day and 0 < int(event_days) <= 31:
                         return event_days
@@ -124,64 +129,123 @@ class BookEvent:
                             event_days) <= 28:
                         return event_days
                     else:
-                        print("Invalid Day. Try Again.")
+                        print("EXCEEDED: Only the days within the month. Try Again.")
             else:
-                print("Invalid Day. Try Again.")
+                print("INVALID: Only numbers no letters or special characters")
 
     def book_event_time(self, user_event_year, user_event_month, user_event_day):
-        print("Ex valid format: 3 PM")
         while True:
             try:
-                event_time = input("Enter event time: ").strip()
+                event_time = input("Enter event time (ex. 12:00 AM/PM)   : ").strip().upper()
                 event_time_list = event_time.split()
-                hour = datetime.datetime.strptime(event_time_list[0] + " " + event_time_list[1], "%I %p")
-                hour = str(hour.strftime("%H"))
-                if len(event_time_list) == 2:
-                    meantime = event_time_list[1].upper()
-                    if (hour.isdigit() and 0 <= int(hour) < 24) and (meantime == "AM" or meantime == "PM"):
-                        hour = int(hour)
-                        if (user_event_year == self.current_year and user_event_month == self.current_month and
-                                int(user_event_day) == self.current_day):
-                            if hour > self.current_hour:
-                                return [event_time_list[0], meantime]
-                            else:
-                                print("Invalid AM time")
-                        else:
-                            return [event_time_list[0], meantime]
-                    else:
-                        print("Invalid time format")
+
+                check_minute_input = event_time.split(":")
+                get_minutes = check_minute_input[1]
+                get_minutes = get_minutes.split(" ")
+                get_minutes = get_minutes[0]
+                if len(get_minutes) != 2:
+                    print("Invalid time format. Please enter time in the format '3:00 AM/PM.'")
                 else:
-                    print("Invalid time format")
+                    if (user_event_year == self.current_year and user_event_month == self.current_month and
+                            int(user_event_day) == self.current_day):
+                        user_event_time = datetime.datetime.strptime(event_time, "%I:%M %p")
+                        current_time = datetime.datetime.now().strftime("%I:%M %p")
+                        con_current_time = datetime.datetime.strptime(current_time, "%I:%M %p")
+
+                        only_user_time = str(user_event_time).split(" ")
+                        only_user_time = only_user_time[1]
+
+                        only_current_time = str(con_current_time).split(" ")
+                        only_current_time = only_current_time[1]
+                        split_current_time = only_current_time.split(":")
+                        add_one_hour = int(split_current_time[0]) + 1
+                        advance_one_hour = f"{add_one_hour}:{split_current_time[1]}:{split_current_time[2]}"
+
+                        if only_user_time > advance_one_hour:
+                            return [event_time_list[0], event_time_list[1]]
+                        else:
+                            print("INVALID: Please ensure the time is set at least 1 hour ahead of the current time.")
+                    else:
+                        return [event_time_list[0], event_time_list[1]]
+
             except ValueError:
-                print("Invalid time format")
+                print("Invalid time format. Please enter time in the format '3:00 AM/PM'.")
             except IndexError:
-                print("Invalid time format")
+                print("Invalid time format. Please enter time in the format '3:00 AM/PM'.")
+
+
+# -==============================-GLOBAL FOR DISPLAY EVENTS-==============================-
+def display_events(events):
+    if not events:
+        print("No events available.")
+    else:
+        event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I:%M %p"))
+        print("+---+----------------------------------------+---------------------+---------------------+------------+")
+        print("│ # │               EVENT NAME               │      EVENT VENUE    │       SCHEDULE      │   STATUS   │")
+        print("+---+----------------------------------------+---------------------+---------------------+------------+")
+        for i, event in enumerate(events, 1):
+            number = str(i).center(3)
+            name = event[0].center(40)
+            venue = event[1].center(21)
+            schedule = event[2].center(21)
+            if event[3] == 'Cancelled':
+                status = event[3].center(12)
+                status = f"\033[0;31m{status}\033[0m"
+            else:
+                status = event[3].center(12)
+                status = f"\033[0;32m{status}\033[0m"
+            print(f"│{number}│{name}│{venue}│{schedule}│{status}│")
+        print("+---+----------------------------------------+---------------------+---------------------+------------+")
+
+
+# -==============================-GLOBAL FOR EVENT STATUS-==============================-
+def change_event_status(events):
+    try:
+        while True:
+            event_num = int(input("Enter the number of the event you want to update: "))
+            if 0 < event_num <= len(events):
+                while True:
+                    choice = input("Type 'C' to cancel or 'A' to activate: ").upper()
+                    if choice == "C":
+                        print("Successfully change the status.")
+                        return [event_num, 'Cancelled']
+                    elif choice == "A":
+                        print("Successfully change the status.")
+                        return [event_num, 'Active']
+                    else:
+                        print("Invalid choice. Try again.")
+            else:
+                print(f"1 to {len(events)} is the applicable to update status.")
+    except ValueError:
+        print("ERROR: Please enter valid input")
+
+
+# -==============================-GLOBAL VARIABLE FOR DELETE-==============================-
+def delete_event(events):
+    try:
+        event_num = int(input("Enter the number of the event you want to delete: "))
+        if 1 <= event_num <= len(events):
+            del events[event_num - 1]
+            print("Event deleted successfully.")
+        else:
+            print("Invalid event number")
+    except ValueError:
+        print("ERROR: Please enter a valid input")
 
 
 event_store = []
 event_name_store = []
+
+# -==============================-DISPLAY EVENT STATUS-==============================-
 while True:
     display_menu()
     user_choose = input("Choose: ")
 
     if user_choose == "1":
+        display_events(event_store)
 
-        if len(event_store) == 0:
-            print("You didn't save any event.")
-        else:
-            print("+---+----------------------------------------+---------------------+---------------------+")
-            print("│ # │               EVENT NAME               │      EVENT VENUE    │       SCHEDULE      │")
-            print("+---+----------------------------------------+---------------------+---------------------+")
-            for display_info in range(len(event_store)):
-                number = str(display_info + 1).center(3)
-                name = event_store[display_info][0].center(40)
-                venue = event_store[display_info][1].center(21)
-                schedule = event_store[display_info][2].center(21)
-                print(f"│{number}│{name}│{venue}│{schedule}│")
-            print("+---+----------------------------------------+---------------------+---------------------+")
-
+    # -==============================-BOOKS AN EVENT-==============================-
     elif user_choose == "2":
-
         book_event = BookEvent()
         name_venue = book_event.book_event_name()
         year = book_event.book_event_year()
@@ -195,114 +259,133 @@ while True:
         if name_venue[0] in event_name_store:
             list_loc = event_name_store.index(name_venue[0]) + 1
             print(f"\033[0;31mThe event name is already been added\033[0m at {list_loc}")
-            print("+---+----------------------------------------+---------------------+---------------------+")
-            print("│ # │               EVENT NAME               │      EVENT VENUE    │       SCHEDULE      │")
-            print("+---+----------------------------------------+---------------------+---------------------+")
-            for display_info in range(len(event_store)):
-                number = str(display_info + 1).center(3)
-                name = event_store[display_info][0].center(40)
-                venue = event_store[display_info][1].center(21)
-                schedule = event_store[display_info][2].center(21)
-                print(f"│{number}│{name}│{venue}│{schedule}│")
-            print("+---+----------------------------------------+---------------------+---------------------+")
+            display_events(event_store)
 
             while True:
                 change_name = input("Change name(Y/N):").strip().upper()
                 if change_name == "Y":
                     change_event_name = input("Enter event name: ").strip().title()
-                    if change_name in event_name_store:
+                    if change_event_name in event_name_store:
                         print(f"The {change_event_name} as event name is already been stored. Try new event name.")
                     else:
                         name_venue[0] = change_event_name
-                        event_info = [name_venue[0], name_venue[1], formatted_event_sche]
+                        event_info = [name_venue[0], name_venue[1], formatted_event_sche, 'Active']
                         event_store.append(event_info)
-                        event_name_store.append(name_venue[0])
+                        event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I:%M %p"))
+                        event_name_store = [name_store[0] for name_store in event_store]
                         break
                 elif change_name == "N":
                     break
                 else:
                     print("Invalid Choice")
         else:
-            event_info = [name_venue[0], name_venue[1], formatted_event_sche]
+            event_info = [name_venue[0], name_venue[1], formatted_event_sche, 'Active']
             event_store.append(event_info)
-            event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I %p"))
+            event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I:%M %p"))
             event_name_store = [name_store[0] for name_store in event_store]
 
+    # -==============================-UPDATE AN EVENT-==============================-
+
     elif user_choose == "3":
-        print("+---+----------------------------------------+---------------------+---------------------+")
-        print("│ # │               EVENT NAME               │      EVENT VENUE    │       SCHEDULE      │")
-        print("+---+----------------------------------------+---------------------+---------------------+")
-        for display_info in range(len(event_store)):
-            number = str(display_info + 1).center(3)
-            name = event_store[display_info][0].center(40)
-            venue = event_store[display_info][1].center(21)
-            schedule = event_store[display_info][2].center(21)
-            print(f"│{number}│{name}│{venue}│{schedule}│")
-        print("+---+----------------------------------------+---------------------+---------------------+")
+        if len(event_store) > 0:
+            display_events(event_store)
+            update_loop = True
+            while update_loop:
+                update_event = input("Enter the number of the event you want to update: ").strip()
 
-        update_loop = True
-        while update_loop:
-            update_event = input("Enter the corresponding number of the event you want to update: ").strip()
+                if update_event.isdigit() and 0 < int(update_event) <= len(event_store):
+                    print("\nEVENT INFORMATION:")
+                    print("Event name   :", event_store[int(update_event) - 1][0])
+                    print("Event venue  :", event_store[int(update_event) - 1][1])
+                    print("Event time   :", event_store[int(update_event) - 1][2])
+                    print("Event status :", event_store[int(update_event) - 1][3])
 
-            if update_event.isdigit() and 0 < int(update_event) <= len(event_store):
-                print("\nEvent information:")
-                print("Event name:", event_store[int(update_event) - 1][0])
-                print("Event venue:", event_store[int(update_event) - 1][1])
-                print("Event time:", event_store[int(update_event) - 1][2])
+                    print("+-----+-----------------------+")
+                    print("│  #  │     Choose Update     │")
+                    print("+-----+-----------------------+")
+                    print("│  1  │     Event Name        │")
+                    print("│  2  │     Event Venue       │")
+                    print("│  3  │     Event Schedule    │")
+                    print("+-----+-----------------------+")
 
-                print("+--------------------+-----+")
-                print("│    Choose Update   │  #  │")
-                print("+--------------------+-----+")
-                print("│    EVENT NAME      │  1  │")
-                print("│    EVENT VENUE     │  2  │")
-                print("│    EVENT SCHE      │  3  │")
-                print("+--------------------+-----+")
+                    while True:
+                        update_choose = input("Choose:").strip()
 
-                while True:
-                    update_choose = input("Choose:").strip()
+                        if update_choose == "1":
+                            update_event_name = input("Event name: ").strip().title()
 
-                    if update_choose == "1":
-                        update_event_name = input("Event name: ").strip().title()
+                            if update_event_name in event_name_store:
+                                print("The event name is already been added. Try again.")
+                            else:
+                                event_store[int(update_event) - 1][0] = update_event_name
+                                event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I:%M %p"))
+                                event_name_store = [name_store[0] for name_store in event_store]
+                                update_loop = False
+                                break
 
-                        if update_event_name in event_name_store:
-                            print("The event name is already been added. Try again.")
-                        else:
-                            event_store[int(update_event) - 1][0] = update_event_name
-                            event_store.sort(key=lambda x: datetime.datetime.strptime(x[2], "%b %d %Y %I %p"))
-                            event_name_store = [name_store[0] for name_store in event_store]
+                        elif update_choose == "2":
+
+                            update_event_venue = input("Event venue: ").strip().title()
+                            event_store[int(update_event) - 1][1] = update_event_venue
                             update_loop = False
                             break
 
-                    elif update_choose == "2":
+                        elif update_choose == "3":
 
-                        update_event_venue = input("Event venue: ").strip().title()
-                        event_store[int(update_event) - 1][1] = update_event_venue
-                        update_loop = False
-                        break
+                            update_book_event = BookEvent()
+                            year = update_book_event.book_event_year()
+                            month = update_book_event.book_event_month(year)
+                            day = update_book_event.book_event_day(year, month)
+                            time = update_book_event.book_event_time(year, month, day)
+                            formatted_date = month + " " + day + " " + str(year)
+                            formatted_time = str(time[0]) + " " + str(time[1])
+                            formatted_event_sche = formatted_date + " " + formatted_time
+                            event_store[int(update_event) - 1][2] = formatted_event_sche
+                            update_loop = False
+                            break
 
-                    elif update_choose == "3":
+                        else:
+                            print("Invalid Choose. try Again.")
+                else:
+                    print("Please input the correct corresponding number.")
+        else:
+            print("No events available.")
 
-                        update_book_event = BookEvent()
-                        year = update_book_event.book_event_year()
-                        month = update_book_event.book_event_month(year)
-                        day = update_book_event.book_event_day(year, month)
-                        time = update_book_event.book_event_time(year, month, day)
-                        formatted_date = month + " " + day + " " + str(year)
-                        formatted_time = str(time[0]) + " " + str(time[1])
-                        formatted_event_sche = formatted_date + " " + formatted_time
-                        event_store[int(update_event) - 1][2] = formatted_event_sche
-                        update_loop = False
-                        break
-                    else:
-                        print("Invalid Choose. try Again.")
-            else:
-                print("Please input the correct corresponding number.")
+    # -==============================-EDIT EVENT STATUS-==============================-
 
     elif user_choose == "4":
-        pass
+        if len(event_store) > 0:
+            display_events(event_store)
+            change_status = change_event_status(event_store)  # Call your function here
+            event_store[change_status[0] - 1][3] = change_status[1]
+        else:
+            print("No events available.")
+
+    # -==============================-DELETE AN EVENT-==============================-
+
     elif user_choose == "5":
-        pass
+        if len(event_store) > 0:
+            display_events(event_store)
+            delete_confirmation = input("Enter the number of the event you want to delete: ").strip()
+
+            if delete_confirmation.isdigit() and 1 <= int(delete_confirmation) <= len(event_store):
+                confirm_delete = input(
+                    "Are you sure? Details will be deleted permanently. To proceed, type 'yes': ").strip().lower()
+                if confirm_delete == "yes":
+                    del event_store[int(delete_confirmation) - 1]
+                    print("Event deleted successfully.")
+                else:
+                    print("Deletion cancelled.")
+            elif delete_confirmation.lower() == "cancel":
+                print("Deletion cancelled.")
+            else:
+                print("Invalid input.")
+        else:
+            print("No events available.")
+    # -==============================-EXIT-==============================-
+
     elif user_choose == "6":
-        pass
+        break
+
     else:
         print("Invalid Choose. Try Again!")
