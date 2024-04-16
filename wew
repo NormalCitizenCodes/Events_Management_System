@@ -200,8 +200,8 @@ def display_events(events):
 
 # -==============================-GLOBAL FOR EVENT STATUS-==============================-
 def change_event_status(events):
-    try:
-        while True:
+    while True:
+        try:
             event_num = int(input("Enter the number of the event you want to update: "))
             if 0 < event_num <= len(events):
                 while True:
@@ -216,8 +216,8 @@ def change_event_status(events):
                         print("Invalid choice. Try again.")
             else:
                 print(f"1 to {len(events)} is the applicable to update status.")
-    except ValueError:
-        print("ERROR: Please enter valid input")
+        except ValueError:
+            print("ERROR: Please enter valid input")
 
 
 # -==============================-GLOBAL VARIABLE FOR DELETE-==============================-
